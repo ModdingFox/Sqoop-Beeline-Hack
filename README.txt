@@ -1,4 +1,13 @@
 
+This version of sqoop has support for beeline hacked into it. New paramaters have been added to allow the user to specify the JDBC connection string, username, and password to pass to beeline. This was put toghther in a bit of a rush but it works.
+
+The following aditional paramaters have been added to the commandline
+--beeline-connection-string 
+--beeline-user
+--beeline-password
+
+!!!!!!Anything below this point is the normal readme!!!!!!
+
 = Welcome to Sqoop!
 
 This is the Sqoop (SQL-to-Hadoop) tool. Sqoop allows easy imports and
