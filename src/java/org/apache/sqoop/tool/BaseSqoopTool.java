@@ -231,6 +231,11 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
   public static final String OLD_DATASET_ARG = "onto";
   public static final String MERGE_KEY_ARG = "merge-key";
 
+  //Arguments for beeline
+  public static final String BEELINE_CONNECTION_STRING_ARG = "beeline-connection-string";
+  public static final String BEELINE_USER_ARG = "beeline-user";
+  public static final String BEELINE_PASSWORD_ARG = "beeline-password";
+
   // Reset number of mappers to one if there is no primary key avaliable and
   // split by column is explicitly not provided
 
@@ -594,6 +599,23 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
         .withDescription("Override mapping for specific column to hive"
           + " types.")
         .withLongOpt(MAP_COLUMN_HIVE)
+        .create());
+
+    //Add hive opitons for beeline
+    hiveOpts.addOption(OptionBuilder.withArgName("beeline-connection-string")
+       .hasArg()
+       .withDescription("Target Hive JDBC connection string")
+       .withLongOpt(BEELINE_CONNECTION_STRING_ARG)
+       .create());  
+    hiveOpts.addOption(OptionBuilder.withArgName("beeline-user")
+        .hasArg()
+        .withDescription("Hive sername")
+        .withLongOpt(BEELINE_USER_ARG)
+        .create());
+    hiveOpts.addOption(OptionBuilder.withArgName("beeline-password")
+        .hasArg()
+        .withDescription("Hive password")
+        .withLongOpt(BEELINE_PASSWORD_ARG)
         .create());
 
     return hiveOpts;
@@ -1275,6 +1297,15 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
       out.setMapColumnHive(in.getOptionValue(MAP_COLUMN_HIVE));
     }
 
+    //set options for beeline if provided
+    if (in.hasOption(BEELINE_CONNECTION_STRING_ARG)) {
+      out.setBeelineConnectionString(in.getOptionValue(BEELINE_CONNECTION_STRING_ARG));
+    }
+ 
+    if (in.hasOption(BEELINE_USER_ARG) && in.hasOption(BEELINE_PASSWORD_ARG)) {
+      out.setBeelineUser(in.getOptionValue(BEELINE_USER_ARG));
+      out.setBeelinePassword(in.getOptionValue(BEELINE_PASSWORD_ARG));
+    }
   }
 
 

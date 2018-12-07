@@ -62,7 +62,7 @@ public class HiveImport {
   private ConnManager connManager;
   private Configuration configuration;
   private boolean generateOnly;
-  private static boolean testMode = false;
+  private static boolean testMode = true;
 
   public static boolean getTestMode() {
     return testMode;
@@ -95,6 +95,13 @@ public class HiveImport {
 
     String hiveHome = options.getHiveHome();
     String hiveCommand = Shell.WINDOWS ? "hive.cmd" : "hive";
+
+    if(options.getBeelineConnectionString() != null && options.getBeelineUser() != null && options.getBeelinePassword() != null)
+    {
+        LOG.info("Beeline arguments provided setting hiveCommand to use beeline instead of hive");
+        hiveCommand = Shell.WINDOWS ? "beeline.cmd" : "beeline";
+    }
+
     if (null == hiveHome) {
       return hiveCommand;
     }
@@ -378,8 +385,15 @@ public class HiveImport {
 
     String[] argv = getHiveArgs(hiveExec, "-f", filename);
 
+    if(options.getBeelineConnectionString() != null && options.getBeelineUser() != null && options.getBeelinePassword() != null)
+    {
+        LOG.info("Beeline arguments provided injecting connection string, user, and password");
+        argv = getHiveArgs(hiveExec, "-u", options.getBeelineConnectionString(), "-n", options.getBeelineUser(), "-p", options.getBeelinePassword(), "-f", filename);
+    }
+
     LoggingAsyncSink logSink = new LoggingAsyncSink(LOG);
     int ret = Executor.exec(argv, env.toArray(new String[0]), logSink, logSink);
+
     if (0 != ret) {
       throw new IOException("Hive exited with status " + ret);
     }

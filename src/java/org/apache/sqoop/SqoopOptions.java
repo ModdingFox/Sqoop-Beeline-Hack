@@ -356,6 +356,11 @@ public class SqoopOptions implements Cloneable {
 
   @StoredAsProperty("sqlconnection.metadata.transaction.isolation.level") private int metadataTransactionIsolationLevel;
 
+  //Beeline properties
+  @StoredAsProperty("beeline.connection_string") private String beeline_connection_string;
+  @StoredAsProperty("beeline.user") private String beeline_user;
+  @StoredAsProperty("beeline.password") private String beeline_password;
+
   // These next two fields are not serialized to the metastore.
   // If this SqoopOptions is created by reading a saved job, these will
   // be populated by the JobStorage to facilitate updating the same
@@ -2763,6 +2768,30 @@ public class SqoopOptions implements Cloneable {
 
   public boolean getEscapeMappingColumnNamesEnabled() {
     return escapeColumnMappingEnabled;
+  }
+
+  public void setBeelineConnectionString(String Argument_In) {
+    this.beeline_connection_string = Argument_In;
+  }
+  
+  public String getBeelineConnectionString() {
+    return this.beeline_connection_string;
+  }
+
+  public void setBeelineUser(String Argument_In) {
+    this.beeline_user = Argument_In;
+  }
+
+  public String getBeelineUser() {
+    return this.beeline_user;
+  }
+  
+  public void setBeelinePassword(String Argument_In) {
+    this.beeline_password = Argument_In;
+  }
+
+  public String getBeelinePassword() {
+    return this.beeline_password;
   }
 
   public Properties getColumnNames() {
