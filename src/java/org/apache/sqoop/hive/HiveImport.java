@@ -62,7 +62,7 @@ public class HiveImport {
   private ConnManager connManager;
   private Configuration configuration;
   private boolean generateOnly;
-  private static boolean testMode = true;
+  private static boolean testMode = false;
 
   public static boolean getTestMode() {
     return testMode;
@@ -307,6 +307,12 @@ public class HiveImport {
   private void executeScript(String filename, List<String> env)
       throws IOException {
     SubprocessSecurityManager subprocessSM = null;
+    
+    //Used to force executeExternalHiveScript when beeline options are set. This should be temporary
+    if(options.getBeelineConnectionString() != null && options.getBeelineUser() != null && options.getBeelinePassword() != null)
+    {
+        setTestMode(true);
+    }
 
     if (testMode) {
       // We use external mock hive process for test mode as
