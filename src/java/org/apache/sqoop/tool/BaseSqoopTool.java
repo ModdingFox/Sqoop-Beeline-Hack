@@ -610,7 +610,7 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
        .create());  
     hiveOpts.addOption(OptionBuilder.withArgName("beeline-user")
         .hasArg()
-        .withDescription("Hive sername")
+        .withDescription("Hive username")
         .withLongOpt(BEELINE_USER_ARG)
         .create());
     hiveOpts.addOption(OptionBuilder.withArgName("beeline-password")
