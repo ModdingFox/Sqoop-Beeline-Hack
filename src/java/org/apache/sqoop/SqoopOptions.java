@@ -360,6 +360,7 @@ public class SqoopOptions implements Cloneable {
   @StoredAsProperty("beeline.connection_string") private String beeline_connection_string;
   @StoredAsProperty("beeline.user") private String beeline_user;
   @StoredAsProperty("beeline.password") private String beeline_password;
+  @StoredAsProperty("beeline.password.file") private String beelinePasswordFilePath;
 
   // These next two fields are not serialized to the metastore.
   // If this SqoopOptions is created by reading a saved job, these will
@@ -2792,6 +2793,14 @@ public class SqoopOptions implements Cloneable {
 
   public String getBeelinePassword() {
     return this.beeline_password;
+  }
+
+  public void setBeelinePasswordFilePath(String passwdFilePath) {
+    this.beelinePasswordFilePath = passwdFilePath;
+  }
+  
+  public String getBeelinePasswordFilePath() {
+    return this.beelinePasswordFilePath;
   }
 
   public Properties getColumnNames() {

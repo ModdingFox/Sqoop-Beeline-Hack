@@ -109,7 +109,8 @@ public final class Executor {
     }
 
     for (Map.Entry<String, String> entry : curEnv.entrySet()) {
-      array.add(entry.getKey() + "=" + entry.getValue());
+        if(entry.getKey().equals("HADOOP_HEAPSIZE")) { }//lets not pass this value as it can break things when beeline is used
+        else { array.add(entry.getKey() + "=" + entry.getValue()); }
     }
 
     return array;

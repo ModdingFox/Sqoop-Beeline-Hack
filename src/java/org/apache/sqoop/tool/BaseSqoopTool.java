@@ -235,6 +235,7 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
   public static final String BEELINE_CONNECTION_STRING_ARG = "beeline-connection-string";
   public static final String BEELINE_USER_ARG = "beeline-user";
   public static final String BEELINE_PASSWORD_ARG = "beeline-password";
+  public static final String BEELINE_PASSWORD_PATH_ARG = "beeline-password-file";
 
   // Reset number of mappers to one if there is no primary key avaliable and
   // split by column is explicitly not provided
@@ -616,6 +617,11 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
         .hasArg()
         .withDescription("Hive password")
         .withLongOpt(BEELINE_PASSWORD_ARG)
+        .create());
+    hiveOpts.addOption(OptionBuilder.withArgName("beeline-password-file")
+        .hasArg()
+        .withDescription("Hive password file path on hdfs")
+        .withLongOpt(BEELINE_PASSWORD_PATH_ARG)
         .create());
 
     return hiveOpts;
@@ -1242,6 +1248,35 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
      out.setHiveExternalTableDir(in.getOptionValue(HIVE_EXTERNAL_TABLE_LOCATION_ARG));
    }
 
+   //set options for beeline if provided
+   if (in.hasOption(BEELINE_CONNECTION_STRING_ARG)) {
+     out.setBeelineConnectionString(in.getOptionValue(BEELINE_CONNECTION_STRING_ARG));
+   }
+
+   if (in.hasOption(BEELINE_USER_ARG) && (in.hasOption(BEELINE_PASSWORD_ARG) || in.hasOption(BEELINE_PASSWORD_PATH_ARG))) {
+     out.setBeelineUser(in.getOptionValue(BEELINE_USER_ARG));
+
+     if(in.hasOption(BEELINE_PASSWORD_ARG) && in.hasOption(BEELINE_PASSWORD_PATH_ARG)) {
+       throw new InvalidOptionsException("Only one of password or path to a password file must be specified.");
+     }
+     else if(in.hasOption(BEELINE_PASSWORD_ARG)) {
+       out.setBeelinePassword(in.getOptionValue(BEELINE_PASSWORD_ARG));
+     }
+     else if(in.hasOption(BEELINE_PASSWORD_PATH_ARG)) {
+       try {
+         out.setPasswordFilePath(in.getOptionValue(BEELINE_PASSWORD_PATH_ARG));
+         out.setBeelinePassword(CredentialsUtil.fetchPassword(out));
+         CredentialsUtil.cleanUpSensitiveProperties(out.getConf());
+       }
+       catch (IOException ex) {
+         LOG.warn("Failed to load password file", ex);
+         throw (InvalidOptionsException) new InvalidOptionsException("Error while loading password file: " + ex.getMessage()).initCause(ex);
+       }
+     }
+     else {
+       new InvalidOptionsException("Impossible condition: BEELINE_PASSWORD_ARG or BEELINE_PASSWORD_PATH_ARG was set but no longer is");
+     }
+   }
   }
 
   protected void applyHCatalogOptions(CommandLine in, SqoopOptions out) {
@@ -1295,16 +1330,6 @@ public abstract class BaseSqoopTool extends com.cloudera.sqoop.tool.SqoopTool {
 
     if (in.hasOption(MAP_COLUMN_HIVE)) {
       out.setMapColumnHive(in.getOptionValue(MAP_COLUMN_HIVE));
-    }
-
-    //set options for beeline if provided
-    if (in.hasOption(BEELINE_CONNECTION_STRING_ARG)) {
-      out.setBeelineConnectionString(in.getOptionValue(BEELINE_CONNECTION_STRING_ARG));
-    }
- 
-    if (in.hasOption(BEELINE_USER_ARG) && in.hasOption(BEELINE_PASSWORD_ARG)) {
-      out.setBeelineUser(in.getOptionValue(BEELINE_USER_ARG));
-      out.setBeelinePassword(in.getOptionValue(BEELINE_PASSWORD_ARG));
     }
   }
 
