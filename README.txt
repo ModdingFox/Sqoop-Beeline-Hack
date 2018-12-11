@@ -5,6 +5,7 @@ The following aditional paramaters have been added to the commandline
 --beeline-connection-string 
 --beeline-user
 --beeline-password
+--beeline-password-file
 
 !!!!!!Anything below this point is the normal readme!!!!!!
 
